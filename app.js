@@ -9,7 +9,6 @@ class AttendanceTracker {
         this.loadInitialData();
         this.updateStats();
         this.renderAttendanceTable();
-        this.initializeCharts();
     }
 
     initializeElements() {
@@ -289,128 +288,6 @@ class AttendanceTracker {
         document.getElementById('totalAbsent').textContent = absentCount;
         document.getElementById('totalStudents').textContent = totalStudents;
         document.getElementById('attendanceRate').textContent = `${attendanceRate}%`;
-    }
-
-    initializeCharts() {
-        this.initWeeklyChart();
-        this.initClassChart();
-    }
-
-    initWeeklyChart() {
-        const ctx = document.getElementById('weeklyChart').getContext('2d');
-        const weekData = this.getWeeklyData();
-        
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: weekData.labels,
-                datasets: [{
-                    label: 'Attendance Rate (%)',
-                    data: weekData.data,
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        ticks: {
-                            callback: function(value) {
-                                return value + '%';
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    initClassChart() {
-        const ctx = document.getElementById('classChart').getContext('2d');
-        const classData = this.getClassData();
-        
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: classData.labels,
-                datasets: [{
-                    data: classData.data,
-                    backgroundColor: [
-                        '#667eea',
-                        '#764ba2',
-                        '#48bb78',
-                        '#ed8936',
-                        '#f56565',
-                        '#9f7aea'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-    }
-
-    getWeeklyData() {
-        const labels = [];
-        const data = [];
-        const today = new Date();
-        
-        for (let i = 6; i >= 0; i--) {
-            const date = new Date(today);
-            date.setDate(today.getDate() - i);
-            const dateKey = date.toISOString().split('T')[0];
-            
-            labels.push(date.toLocaleDateString('en-US', { weekday: 'short' }));
-            
-            const dayAttendance = this.attendance[dateKey] || {};
-            const totalStudents = this.students.length;
-            const presentCount = Object.values(dayAttendance).filter(a => a.status === 'present').length;
-            const rate = totalStudents > 0 ? Math.round((presentCount / totalStudents) * 100) : 0;
-            
-            data.push(rate);
-        }
-        
-        return { labels, data };
-    }
-
-    getClassData() {
-        const classes = [...new Set(this.students.map(student => student.class))];
-        const dateKey = this.currentDate;
-        const todayAttendance = this.attendance[dateKey] || {};
-        
-        const labels = [];
-        const data = [];
-        
-        classes.forEach(className => {
-            const classStudents = this.students.filter(student => student.class === className);
-            const presentCount = classStudents.filter(student => 
-                todayAttendance[student.id]?.status === 'present'
-            ).length;
-            
-            labels.push(className);
-            data.push(presentCount);
-        });
-        
-        return { labels, data };
     }
 
     exportData() {
