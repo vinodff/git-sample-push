@@ -1,3 +1,104 @@
-<html>
-    <title>vinod</title>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sign Up - vinod</title>
+  <style>
+    :root{--bg:#f4f7fb;--card:#ffffff;--accent:#4f46e5;--muted:#6b7280}
+    body{font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial,\
+      "Noto Sans","Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";background:var(--bg);margin:0;padding:40px;}
+    .container{max-width:520px;margin:24px auto;background:var(--card);border-radius:12px;padding:28px;box-shadow:0 6px 24px rgba(15,23,42,0.08)}
+    h1{margin:0 0 8px;font-size:20px;color:#0f172a}
+    p.lead{margin:0 0 18px;color:var(--muted);font-size:14px}
+    label{display:block;font-size:13px;color:#111827;margin-bottom:6px}
+    input[type="text"],input[type="email"],input[type="password"]{width:100%;padding:10px 12px;border:1px solid #e6e9ee;border-radius:8px;font-size:14px;margin-bottom:12px;box-sizing:border-box}
+    .row{display:flex;gap:12px}
+    .row .col{flex:1}
+    .actions{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+    button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer}
+    button:disabled{opacity:0.6;cursor:not-allowed}
+    .muted{color:var(--muted);font-size:13px}
+    .error{color:#dc2626;font-size:13px;margin-top:6px}
+    .success{color:#16a34a;font-size:13px;margin-top:6px}
+    footer{margin-top:16px;text-align:center;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <h1>Create your account</h1>
+    <p class="lead">Join us — it only takes a minute. We'll never share your email.</p>
+
+    <form id="signupForm" novalidate>
+      <label for="fullname">Full name</label>
+      <input type="text" id="fullname" name="fullname" placeholder="Jane Doe" required>
+
+      <label for="email">Email address</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required>
+
+      <div class="row">
+        <div class="col">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Create a password" minlength="8" required>
+        </div>
+        <div class="col">
+          <label for="confirm">Confirm password</label>
+          <input type="password" id="confirm" name="confirm" placeholder="Re-enter password" minlength="8" required>
+        </div>
+      </div>
+
+      <div id="feedback" aria-live="polite"></div>
+
+      <div class="actions">
+        <div class="muted">Already have an account? <a href="#">Log in</a></div>
+        <button type="submit" id="submitBtn">Sign up</button>
+      </div>
+    </form>
+
+    <footer>By signing up you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</footer>
+  </main>
+
+  <script>
+    const form = document.getElementById('signupForm');
+    const feedback = document.getElementById('feedback');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function showMessage(message, type='error'){
+      feedback.textContent = message;
+      feedback.className = type === 'error' ? 'error' : 'success';
+    }
+
+    function validateEmail(email) {
+      // simple RFC-like check
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      feedback.textContent = '';
+
+      const name = form.fullname.value.trim();
+      const email = form.email.value.trim();
+      const password = form.password.value;
+      const confirm = form.confirm.value;
+
+      if(!name){ showMessage('Please enter your full name.'); form.fullname.focus(); return }
+      if(!email || !validateEmail(email)){ showMessage('Please enter a valid email address.'); form.email.focus(); return }
+      if(password.length < 8){ showMessage('Password must be at least 8 characters long.'); form.password.focus(); return }
+      if(password !== confirm){ showMessage('Passwords do not match.'); form.confirm.focus(); return }
+
+      // disable button to simulate submit
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating...';
+
+      // Simulate network request
+      setTimeout(()=>{
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign up';
+        form.reset();
+        showMessage('Account created successfully — check your email to confirm.', 'success');
+      }, 900);
+    });
+  </script>
+</body>
 </html>
