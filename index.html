@@ -3,24 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Advanced Attendance Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="login-container">
-        <form id="loginForm">
-            <h2>Login</h2>
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h1>AttendanceTracker Pro</h1>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" id="exportBtn">
+                        <i class="fas fa-download"></i>
+                        Export Data
+                    </button>
+                    <button class="btn btn-primary" id="addStudentBtn">
+                        <i class="fas fa-user-plus"></i>
+                        Add Student
+                    </button>
+                </div>
             </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Login</button>
-        </form>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Dashboard -->
+            <section class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon present">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalPresent">0</h3>
+                            <p>Present Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon absent">
+                            <i class="fas fa-user-times"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalAbsent">0</h3>
+                            <p>Absent Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon total">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalStudents">0</h3>
+                            <p>Total Students</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon percentage">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="attendanceRate">0%</h3>
+                            <p>Attendance Rate</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Controls -->
+            <section class="controls-section">
+                <div class="controls-grid">
+                    <div class="date-control">
+                        <label for="attendanceDate">
+                            <i class="fas fa-calendar"></i>
+                            Date
+                        </label>
+                        <input type="date" id="attendanceDate" class="form-input">
+                    </div>
+                    <div class="search-control">
+                        <label for="searchStudent">
+                            <i class="fas fa-search"></i>
+                            Search Student
+                        </label>
+                        <input type="text" id="searchStudent" class="form-input" placeholder="Search by name or ID...">
+                    </div>
+                    <div class="filter-control">
+                        <label for="classFilter">
+                            <i class="fas fa-filter"></i>
+                            Filter by Class
+                        </label>
+                        <select id="classFilter" class="form-input">
+                            <option value="">All Classes</option>
+                        </select>
+                    </div>
+                    <div class="bulk-actions">
+                        <button class="btn btn-success" id="markAllPresentBtn">
+                            <i class="fas fa-check-double"></i>
+                            Mark All Present
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Attendance Table -->
+            <section class="attendance-section">
+                <div class="table-container">
+                    <table class="attendance-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" id="selectAll">
+                                </th>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Status</th>
+                                <th>Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody">
+                            <!-- Dynamic content will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section class="analytics-section">
+                <div class="analytics-grid">
+                    <div class="chart-container">
+                        <h3>Weekly Attendance Trend</h3>
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Class-wise Attendance</h3>
+                        <canvas id="classChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
-    <script src="script.js"></script>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Student</h2>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addStudentForm" class="modal-body">
+                <div class="form-group">
+                    <label for="studentId">Student ID</label>
+                    <input type="text" id="studentId" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentName">Full Name</label>
+                    <input type="text" id="studentName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentClass">Class</label>
+                    <input type="text" id="studentClass" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentEmail">Email (Optional)</label>
+                    <input type="email" id="studentEmail" class="form-input">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
